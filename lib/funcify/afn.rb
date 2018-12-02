@@ -46,10 +46,14 @@ module Funcify
 
       #
       # Policy Fns
+      # ==========
       #
       # A Policy gets the ctx, performs tests on the ctx, determines pass or fail and returns the ctx wrapped in an either
+      # The ctx is specific to the test
       #
 
+      # Slack Policy
+      # ------------
       # Slack Policy looks for :token in the ctx, and ensures that token is configured in Account.
       # @param ctx {} expects a :token key/value provided by Slack.
       def slack_token_policy
@@ -63,9 +67,13 @@ module Funcify
         ]
       end
 
-      # The Activity-based access control policy.
+      # The Activity-based access control policy
+      # ----------------------------------------
       # @param activities [String] A collection of activity strings assigned to the user obtained from Identity.  For example:
       #                            => ["lic:account:resource:billing_entity:*","lic:account:resource:payment_method:*"]
+      # @param filter_fn  A fn used to filter the activities.  Afn provides a #for_system fn which removes
+      #                   any activities not associated with the system under test.  Fn.identity could be used to retain
+      #                   all activities, or you can use any other fn that takes the activities as the last param      
       # @param ctx {}  service/resource/action being tested; e.g. {:resource=>:invoice, :action=>:create}
       # Policy runs 4 tests:
       # + the ctx includes a :resource key
@@ -73,8 +81,8 @@ module Funcify
       # + the ctx includes an :activities
       # + and finally, the significant test, the service/resource/action match an activity
       def activity_policy
-        -> activities, ctx {
-          Fn.either.(Fn.tests.(Fn.all?, activity_tests), Fn.success, Fn.failure ).(ctx.merge(activities: activities))
+        -> activities, filter_fn, ctx {
+          Fn.either.(Fn.tests.(Fn.all?, activity_tests), Fn.success, Fn.failure ).(ctx.merge(activities: filter_fn.(activities)))
         }.curry
       end
 
@@ -87,10 +95,44 @@ module Funcify
         ]
       end
 
+      # The Privelged access control policy
+      # ----------------------------------------
+      # @param activities [String] A collection of activity strings assigned to the user obtained from Identity.  For example:
+      #                            => ["lic:account:privilege:billing_entity:*","lic:account:privilege:payment_method:*"]
+      # @param filter_fn  A fn used to filter the activities.  Afn provides a #for_system fn which removes
+      #                   any activities not associated with the system under test.  Fn.identity could be used to retain
+      #                   all activities, or you can use any other fn that takes the activities as the last param
+      # @param ctx {}  service/resource/action being tested for privileged access; e.g. {:resource=>:invoice, :action=>:create}
+      # Policy runs 4 tests:
+      # + the ctx includes a :privilege key
+      # + the ctx includes an :action key
+      # + the ctx includes an :activities
+      # + and finally, the significant test, the service/resource/action match an activity
+      def privilege_policy
+        -> activities, filter_fn, ctx {
+          Fn.either.(Fn.tests.(Fn.all?, privilege_tests), Fn.success, Fn.failure ).(ctx.merge(activities: filter_fn.(activities)))
+        }.curry
+      end
+
+      def privilege_tests
+        [
+          key_present_test.(:privilege),
+          key_present_test.(:action),
+          key_present_test.(:activities),
+          has_privileged_access
+        ]
+      end
+
 
       #
       # Helper Fns
       #
+
+      def for_system
+        -> system, activities {
+          Fn.remove.(-> a { !a.include?(system.to_s)}).(activities)
+        }.curry
+      end
 
       def key_present_test
         -> k, ctx { ctx.has_key? k }.curry
@@ -106,19 +148,26 @@ module Funcify
       # activitys: user's activity enum
       def has_activity
         -> ctx  {
-          activity_match.(ctx[:system], ctx[:resource], ctx[:action]).(ctx[:activities])
+          activity_match.(ctx[:resource], ctx[:action]).(ctx[:activities])
         }.curry
       end
 
+      def has_privileged_access
+        -> ctx  {
+          activity_match.(ctx[:privilege], ctx[:action]).(ctx[:activities])
+        }.curry
+      end
+
+
       def activity_match
-        -> s, r, a, activities {
-          Fn.find.(policy_match.(s, r, a)).(activities)
+        -> r, a, activities {
+          Fn.find.(policy_match.(r, a)).(activities)
         }.curry
       end
 
       def policy_match
-        -> s, r, a, activity {
-          Fn.compose.(  activity_token_matcher.(s,r,a),
+        -> r, a, activity {
+          Fn.compose.(  activity_token_matcher.(r,a),
                         Fn.coherse.(:to_sym),
                         Fn.split.(":")
             ).(activity)
@@ -126,15 +175,14 @@ module Funcify
       end
 
       def activity_token_matcher
-        -> s,r,a,tokens {
-          Fn.tests.(Fn.all?, activity_policy_tests.(s,r,a)).(tokens)
+        -> r, a, tokens {
+          Fn.tests.(Fn.all?, activity_policy_tests.(r, a)).(tokens)
         }.curry
       end
 
       def activity_policy_tests
-        -> s,r,a {
+        -> r, a {
           [
-            system_test.(s),
             resource_test.(r),
             action_test.(a)
           ]
@@ -155,7 +203,8 @@ module Funcify
 
       def token_match
         -> req, token {
-          req.nil? || req.size == 0 || token == :* || token == req
+          # req.nil? || req.size == 0 || token == :* || token == req
+          token == :* || token == req
         }.curry
       end
 

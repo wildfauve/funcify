@@ -73,41 +73,70 @@ RSpec.describe Funcify::Afn do
     it 'passes the activity check' do
       activities = ["lic:account:resource:billing_entity:show"]
 
-      result = Funcify::Afn.activity_policy.(activities).(system: :account, resource: :billing_entity, action: :show)
+      result = Funcify::Afn.activity_policy.(activities, Funcify::Fn.identity).(system: :account, resource: :billing_entity, action: :show)
 
       expect(result).to be_success
     end
 
+    it 'removes activities unrelated to this system' do
+      activities = ["lic:random_other_system_with_same_activity:resource:billing_entity:show"]
+
+      result = Funcify::Afn.activity_policy.(activities, Funcify::Afn.for_system.(:account)).(system: :account, resource: :billing_entity, action: :show)
+
+      expect(result).to be_failure
+    end
+
+
     it 'fails the activity check when the activity action does not match' do
       activities = ["lic:account:resource:billing_entity:read"]
-      result = Funcify::Afn.activity_policy.(activities).(resource: :billing_entity, action: :show)
+      result = Funcify::Afn.activity_policy.(activities, Funcify::Fn.identity).(resource: :billing_entity, action: :show)
 
       expect(result).to be_failure
     end
 
     it 'fails the activity check when the activity resource does not match' do
       activities = ["lic:account:resource:some_other_resource:show"]
-      result = Funcify::Afn.activity_policy.(activities).(resource: :billing_entity, action: :show)
+      result = Funcify::Afn.activity_policy.(activities, Funcify::Fn.identity).(resource: :billing_entity, action: :show)
 
       expect(result).to be_failure
     end
 
     it 'passes with the action is a wildcard' do
       activities = ["lic:account:resource:billing_entity:*"]
-      result = Funcify::Afn.activity_policy.(activities).(resource: :billing_entity, action: :show)
+      result = Funcify::Afn.activity_policy.(activities, Funcify::Fn.identity).(system: :account, resource: :billing_entity, action: :show)
 
       expect(result).to be_success
     end
 
     it 'passes with the resource and action are wildcards' do
       activities = ["lic:account:resource:*:*"]
-      result = Funcify::Afn.activity_policy.(activities).(resource: :billing_entity, action: :show)
+      result = Funcify::Afn.activity_policy.(activities, Funcify::Fn.identity).(system: :account, resource: :billing_entity, action: :show)
 
       expect(result).to be_success
     end
 
+  end
+
+  context '#privilege_policy' do
+
+    it 'passes the privilege check' do
+      activities = ["lic:account:privilege:billing_entity:*"]
+
+      result = Funcify::Afn.privilege_policy.(activities, Funcify::Fn.identity).(privilege: :billing_entity, action: :show)
+
+      expect(result).to be_success
+    end
+
+    it 'fails when the privileged resource is not available' do
+      activities = ["lic:account:privilege:invoice:*"]
+
+      result = Funcify::Afn.privilege_policy.(activities, Funcify::Fn.identity).(privilege: :billing_entity, action: :show)
+
+      expect(result).to be_failure
+    end
 
   end
+
 
   context '#auth_error_raise_enforcer' do
 
