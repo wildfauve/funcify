@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    funcify (0.2.1)
+    funcify (0.3.2)
       dry-monads (~> 1.0)
 
 GEM

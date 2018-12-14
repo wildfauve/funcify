@@ -4,6 +4,9 @@ module Funcify
 
     extend Dry::Monads::Result::Mixin
 
+    PRIVILEGE = :privilege
+    RESOURCE  = :resource
+
     class << self
 
       #
@@ -73,7 +76,7 @@ module Funcify
       #                            => ["lic:account:resource:billing_entity:*","lic:account:resource:payment_method:*"]
       # @param filter_fn  A fn used to filter the activities.  Afn provides a #for_system fn which removes
       #                   any activities not associated with the system under test.  Fn.identity could be used to retain
-      #                   all activities, or you can use any other fn that takes the activities as the last param      
+      #                   all activities, or you can use any other fn that takes the activities as the last param
       # @param ctx {}  service/resource/action being tested; e.g. {:resource=>:invoice, :action=>:create}
       # Policy runs 4 tests:
       # + the ctx includes a :resource key
@@ -91,7 +94,7 @@ module Funcify
           key_present_test.(:resource),
           key_present_test.(:action),
           key_present_test.(:activities),
-          has_activity
+          has_activity.(resource_activity_policy_tests)
         ]
       end
 
@@ -119,7 +122,7 @@ module Funcify
           key_present_test.(:privilege),
           key_present_test.(:action),
           key_present_test.(:activities),
-          has_privileged_access
+          has_privileged_access.(privilege_activity_policy_tests)
         ]
       end
 
@@ -147,27 +150,27 @@ module Funcify
       # a: action
       # activitys: user's activity enum
       def has_activity
-        -> ctx  {
-          activity_match.(ctx[:resource], ctx[:action]).(ctx[:activities])
+        -> tests, ctx  {
+          activity_match.(tests, ctx[:resource], ctx[:action]).(ctx[:activities])
         }.curry
       end
 
       def has_privileged_access
-        -> ctx  {
-          activity_match.(ctx[:privilege], ctx[:action]).(ctx[:activities])
+        -> tests, ctx  {
+          activity_match.(tests, ctx[:privilege], ctx[:action]).(ctx[:activities])
         }.curry
       end
 
 
       def activity_match
-        -> r, a, activities {
-          Fn.find.(policy_match.(r, a)).(activities)
+        -> tests, r, a, activities {
+          Fn.find.(policy_match.(tests, r, a)).(activities)
         }.curry
       end
 
       def policy_match
-        -> r, a, activity {
-          Fn.compose.(  activity_token_matcher.(r,a),
+        -> tests, r, a, activity {
+          Fn.compose.(  activity_token_matcher.(tests, r,a),
                         Fn.coherse.(:to_sym),
                         Fn.split.(":")
             ).(activity)
@@ -175,14 +178,25 @@ module Funcify
       end
 
       def activity_token_matcher
-        -> r, a, tokens {
-          Fn.tests.(Fn.all?, activity_policy_tests.(r, a)).(tokens)
+        -> tests, r, a, tokens {
+          Fn.tests.(Fn.all?, tests.(r, a)).(tokens)
         }.curry
       end
 
-      def activity_policy_tests
+      def privilege_activity_policy_tests
         -> r, a {
           [
+            has_priviled.(r),
+            resource_test.(r),
+            action_test.(a)
+          ]
+        }
+      end
+
+      def resource_activity_policy_tests
+        -> r, a {
+          [
+            has_resource.(r),
             resource_test.(r),
             action_test.(a)
           ]
@@ -191,6 +205,14 @@ module Funcify
 
       def system_test
         -> req, token { token_match.(req).(Fn.at.(1).(token)) }.curry
+      end
+
+      def has_resource
+        -> req, token { Fn.at.(2,token) == RESOURCE }.curry
+      end
+
+      def has_priviled
+        -> req, token { Fn.at.(2,token) == PRIVILEGE }.curry
       end
 
       def resource_test

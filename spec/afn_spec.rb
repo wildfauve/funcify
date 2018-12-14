@@ -127,8 +127,8 @@ RSpec.describe Funcify::Afn do
       expect(result).to be_success
     end
 
-    it 'fails when the privileged resource is not available' do
-      activities = ["lic:account:privilege:invoice:*"]
+    it 'fails when the privileged resource is not available but has the equivalent resource activity' do
+      activities = ["lic:account:privilege:invoice:*", "lic:account:resource:billing_entity:*"]
 
       result = Funcify::Afn.privilege_policy.(activities, Funcify::Fn.identity).(privilege: :billing_entity, action: :show)
 
