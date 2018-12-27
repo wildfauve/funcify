@@ -71,6 +71,10 @@ module Funcify
         ->(f, enum) { enum.any? { |e| f.(e) } }.curry
       end
 
+      def none?
+        ->(f, enum) { enum.none? { |e| f.(e) } }.curry
+      end
+
       def when_nil?
         ->(i) { i.nil? }
       end
@@ -96,7 +100,7 @@ module Funcify
       end
 
       # The little Either Functor
-      # returns either the result of f || g by applying the test <t>.
+      # returns either the result of f_ok || f_fail by applying the value to test t.
       # either.(maybe_value_ok, identity, maybe_value).(Success(1))  => 1
       def either
         ->(t, f_ok, f_fail, value) { t.(value) ? f_ok.(value) : f_fail.(value) }.curry

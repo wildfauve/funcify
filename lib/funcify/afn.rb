@@ -55,6 +55,17 @@ module Funcify
       # The ctx is specific to the test
       #
 
+      #
+      # Valid JWT test
+      # --------------
+      #
+      # Takes any data structure and a function which validates it.
+      def validity_policy
+        -> validating_fns, ctx {
+          Fn.either.(Fn.tests.(Fn.all?, validating_fns), Fn.success, Fn.failure ).(ctx)
+        }.curry
+      end
+
       # Slack Policy
       # ------------
       # Slack Policy looks for :token in the ctx, and ensures that token is configured in Account.
