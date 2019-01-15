@@ -14,7 +14,7 @@ module Funcify
       #
 
       # @param enforcer  A fn that responds to #call which will be performed when the authorisations fail
-      # @param policies  An array of Policy checkers.  The policy takes optional state and ctx and returns a Maybe. Available checkers are:
+      # @param policy_predicates  An array of Policy Predicates.  The policy takes optional state and ctx and returns a Maybe. Available checkers are:
       #                  + Afn.activity_policy
       #                  + Afn.slack_token_policy
       # @param ctx       A data structure of the user's authz context understood by the policy checker; e.g. the activity being performed
@@ -48,10 +48,11 @@ module Funcify
       end
 
       #
-      # Policy Fns
-      # ==========
+      # Policy Predicate Fns
+      # ====================
       #
-      # A Policy gets the ctx, performs tests on the ctx, determines pass or fail and returns the ctx wrapped in an either
+      # A Policy Predicate takes a context (any data structure it might or might not undestand), performs predicate
+      # tests using the context and the state, and returns an Either (Success or Failure)
       # The ctx is specific to the test
       #
 
@@ -61,8 +62,8 @@ module Funcify
       #
       # Takes any data structure and a function which validates it.
       def validity_policy
-        -> validating_fns, ctx {
-          Fn.either.(Fn.tests.(Fn.all?, validating_fns), Fn.success, Fn.failure ).(ctx)
+        -> policy_predicates, ctx {
+          Fn.either.(Fn.tests.(Fn.all?, policy_predicates), Fn.success, Fn.failure ).(ctx)
         }.curry
       end
 

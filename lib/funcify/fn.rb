@@ -152,8 +152,9 @@ module Funcify
         ->( field, value, i ) { i[field] == value }.curry
       end
 
+      # x can either be an array or a string
       def include
-        -> xs, v { xs.include?(v) }.curry
+        -> x, v { x.include?(v) }.curry
       end
 
       def linclusion

@@ -6,4 +6,5 @@ require 'dry/monads/try'
 module Funcify
   autoload :Fn, 'funcify/fn'
   autoload :Afn, 'funcify/afn'
+  autoload :Map, 'funcify/map'
 end
