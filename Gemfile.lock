@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    funcify (0.3.3)
+    funcify (0.4.2)
       dry-monads (~> 1.0)
 
 GEM
@@ -13,7 +13,7 @@ GEM
     dry-core (0.4.7)
       concurrent-ruby (~> 1.0)
     dry-equalizer (0.2.1)
-    dry-monads (1.1.0)
+    dry-monads (1.2.0)
       concurrent-ruby (~> 1.0)
       dry-core (~> 0.4, >= 0.4.4)
       dry-equalizer

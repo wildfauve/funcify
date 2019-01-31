@@ -22,7 +22,7 @@ module Funcify
       end
 
       def inject
-        -> j, f, xs { xs.inject(j) {|r, x| f.(r).(x) } }.curry
+        -> acc, f, xs { xs.inject(acc) {|acc, x| f.(acc).(x) } }.curry
       end
 
       def group_by
