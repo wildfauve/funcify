@@ -157,6 +157,12 @@ module Funcify
         -> x, v { x.include?(v) }.curry
       end
 
+      # Right Include, where the value is applied partially waiting for the test prop
+      def rinclude
+        -> v, x { x.include?(v) }.curry
+      end
+
+
       def linclusion
         ->( field, value, i ) { i[field].include?(value) }.curry
       end
@@ -279,6 +285,13 @@ module Funcify
         ->(str) { str.split(delimiter) }.curry
       end
 
+
+      # Provides a Maybe pipeline wrapped in a Lambda.  This allows the pipeline functions to be
+      # applied first, and returns a function which allows the injection of the params to be applied into the
+      # beginning of the pipeline.
+      # e.g.
+      # pipeline = maybe_pipeline.([-> x { Success(x + 1) } ] )
+      # pipeline.value_or.(Success(1))  => Success(2)
       def maybe_pipeline
         ->(pipeline) {
           Success(lambda do |value|
