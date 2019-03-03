@@ -215,11 +215,11 @@ module Funcify
       end
 
       def maybe_value_ok?
-        ->(v) { v.success? }
+        ->(v) { v.respond_to(:success?) && v.success? }
       end
 
       def maybe_value_fail?
-        -> v { v.failure? }
+        -> v { v.respond_to(:failure?) && v.failure? }
       end
 
       def maybe_value
