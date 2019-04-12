@@ -13,9 +13,10 @@ module Funcify
       # Authorise Fns
       #
 
-      # @param enforcer  A fn that responds to #call which will be performed when the authorisations fail
+      # @param enforcer  A fn that responds to #call performed when the authorisations fail
       # @param policy_predicates  An array of Policy Predicates.  The policy takes optional state and ctx and returns a Maybe. Available checkers are:
       #                  + Afn.activity_policy
+      #                  + Afn.privilege_policy
       #                  + Afn.slack_token_policy
       # @param ctx       A data structure of the user's authz context understood by the policy checker; e.g. the activity being performed
       # Example
@@ -33,8 +34,33 @@ module Funcify
         }.curry
       end
 
+      # alias of authorise, which works with fmapping; hence all policy checks MUST be Success
+      def all_authorisor
+        -> enforcer, policies, ctx {
+          Fn.compose.(  finally_fn.(enforcer),
+                        Fn.fmap_compose.(policies)
+            ).(Success(ctx))
+        }.curry
+      end
+
+      # Similar to all_authorisor, except at least one of the policies MUST be success
+      def or_authorisor
+        -> enforcer, policies, ctx {
+          Fn.compose.(  any_finally_fn.(enforcer),
+                        Fn.map.(-> policy { policy.(ctx) } )
+            ).(policies)
+        }.curry
+      end
+
       def finally_fn
         -> enforcer, v { Fn.either.(Fn.maybe_value_ok?).(Fn.identity).(-> x { enforcer.(x) } ).(v) }.curry
+      end
+
+      # any results Success(), then Success, otherwise call enforcer
+      def any_finally_fn
+        -> enforcer, results {
+          Fn.either.(Fn.any?.(Fn.maybe_value_ok?), Fn.success).(-> x { enforcer.(x) }).(results)
+       }.curry
       end
 
       #

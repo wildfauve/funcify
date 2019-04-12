@@ -86,7 +86,7 @@ module Funcify
 
       # Takes a structure (like a Monad), an OK test fn, and a fn to extract when OK
       # Returns the result of f, otherwise nil
-      # > lift_value.(maybe_value_ok, maybe_value),
+        # > lift_value.(maybe_value_ok, maybe_value),
       def lift_value
         ->(value_type, f) { Fn.lift.(value_type, f) }.curry
       end
@@ -113,7 +113,7 @@ module Funcify
         -> success_fn, test_fns, value {
           Fn.compose.(
             success_fn.(Fn.identity),                   # provide a results extractor fn to the success_fn
-            Fn.map.(-> test_fn { test_fn.(value) } )    # call each test fn with the context
+            Fn.map.(-> test_fn { test_fn.(value) } ),    # call each test fn with the context
           ).(test_fns)
         }.curry
       end

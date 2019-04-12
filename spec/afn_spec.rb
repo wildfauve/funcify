@@ -137,6 +137,33 @@ RSpec.describe Funcify::Afn do
 
   end
 
+  context 'or authorisor' do
+
+    it 'applies both the activity and privilege policy to determine success' do
+      activities = ["lic:account:privilege:billing_entity:*", "lic:account:resource:billing_entity:*"]
+
+      policies = [ Funcify::Afn.privilege_policy.(activities, Funcify::Fn.identity),
+                   Funcify::Afn.activity_policy.(activities, Funcify::Fn.identity) ]
+
+      result = Funcify::Afn.or_authorisor.(Funcify::Afn.nil_enforcer).(policies).(privilege: :billing_entity, action: :show)
+
+      expect(result).to be_success
+
+    end
+
+    it 'fails when both policies fail' do
+      activities = ["lic:account:privilege:wrong_resource:*", "lic:account:resource:wrong_resource:*"]
+
+      policies = [ Funcify::Afn.privilege_policy.(activities, Funcify::Fn.identity),
+                   Funcify::Afn.activity_policy.(activities, Funcify::Fn.identity) ]
+
+      expect { Funcify::Afn.or_authorisor.(Funcify::Afn.error_raiser.(StandardError)).(policies).(privilege: :billing_entity, action: :show)
+      }.to raise_error StandardError
+
+    end
+
+
+  end
 
   context '#auth_error_raise_enforcer' do
 
