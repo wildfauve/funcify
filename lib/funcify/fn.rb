@@ -148,8 +148,19 @@ module Funcify
         ->(f, enum) { f.(enum)}.curry
       end
 
+      # + field; the property to extract from the record.  Either a String/Symb or a Proc which takes the record
+      # + test_value; the value which has == applied to determine equality
+      # + i; the record under test
+      # e.g. equality.(:a).("equal").({a: "equal"})
+      # e.g. equality.(test_fn).("equal").({a: "equal"})) ; where test_fn is -> x { x[:a] }
       def equality
-        ->( field, value, i ) { i[field] == value }.curry
+        ->( field, test_value, i ) {
+          if field.kind_of?(Proc)
+            field.(i) == test_value
+          else
+            i[field] == test_value
+          end
+        }.curry
       end
 
       # x can either be an array or a string

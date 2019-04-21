@@ -27,4 +27,16 @@ RSpec.describe Funcify::Fn do
 
   end
 
+  context '#equality' do
+
+    it 'successfully matches the field with the value' do
+      expect(Funcify::Fn.equality.(:a).("equal").({a: "equal"})).to be true
+    end
+
+    it 'uses a fn to extract the test property' do
+      test_fn = -> x { x[:a] }
+      expect(Funcify::Fn.equality.(test_fn).("equal").({a: "equal"})).to be true
+    end
+  end
+
 end
