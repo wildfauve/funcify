@@ -11,6 +11,10 @@ module Funcify
         ->(f, ms) { ms.map {|k,v| f.(k,v) } }.curry
       end
 
+      def fmap
+        ->(f, ms) { ms.flat_map {|k,v| f.(k,v) } }.curry
+      end
+
       def inject
         -> j, f, ms { ms.inject(j) {|acc, (k,v)| f.(acc).(k,v) } }.curry
       end

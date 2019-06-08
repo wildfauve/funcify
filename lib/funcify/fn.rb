@@ -79,6 +79,10 @@ module Funcify
         ->(i) { i.nil? }
       end
 
+      def flatten
+        -> xs { xs.flatten }
+      end
+
       # lifts the value, otherwise returns nil
       def lift
         ->(f, with, i) { f.(i) ? with.(i) : nil }.curry
@@ -145,7 +149,7 @@ module Funcify
       # Apply that takes a function and an enum and applies the fn to the entire enum
       # Works with methods like #join, #split
       def apply
-        ->(f, enum) { f.(enum)}.curry
+        ->(f, enum) { f.(enum) }.curry
       end
 
       # + field; the property to extract from the record.  Either a String/Symb or a Proc which takes the record
@@ -209,13 +213,9 @@ module Funcify
         -> limit, i { i > limit ? limit : i }.curry
       end
 
-      # Takes a structure (like a Monad), an OK test fn, and a fn to extract when OK
-      # Returns the result of f, otherwise nil
-      # > lift_value.(maybe_value_ok?, maybe_value),
       def lift_monad
         -> value { maybe_value_ok?.(value) ? maybe_value.(value) : maybe_failure.(value) }
       end
-
 
       def failure
         -> v { Failure(v) }
