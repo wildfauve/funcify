@@ -75,6 +75,21 @@ module Funcify
         ->(f, enum) { enum.none? { |e| f.(e) } }.curry
       end
 
+      def last
+        -> xs { xs.last }
+      end
+
+      def first
+        -> xs { xs.first }
+      end
+
+      def rest
+        -> xs {
+          _a, *b = xs
+          b
+        }
+      end
+
       def when_nil?
         ->(i) { i.nil? }
       end
