@@ -16,4 +16,12 @@ RSpec.describe Funcify::Map do
     end
   end
 
+  context '#select' do
+    it 'selects from map containing each k/v' do
+      selecter = -> k, v { v == 1 }.curry
+      result = Funcify::Map.select.(selecter).({a: 1, b: 2})
+      expect(result).to eq({a:1})
+    end
+  end
+
 end

@@ -20,7 +20,7 @@ module Funcify
       end
 
       def select
-        -> f, ms { ms.select {|(k,v)| f.(k,v) } }.curry
+        -> f, ms { ms.select {|k,v| f.(k,v) } }.curry
       end
 
       def equality
