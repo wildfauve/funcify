@@ -19,6 +19,10 @@ module Funcify
         -> j, f, ms { ms.inject(j) {|acc, (k,v)| f.(acc).(k,v) } }.curry
       end
 
+      def select
+        -> f, ms { ms.select {|(k,v)| f.(k,v) } }.curry
+      end
+
       def equality
         ->( field, value, i ) { i[field] == value }.curry
       end
