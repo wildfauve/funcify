@@ -11,6 +11,10 @@ module Funcify
         ->(f, ms) { ms.map {|k,v| f.(k,v) } }.curry
       end
 
+      def any?
+        ->(f, ms) { ms.any? {|k,v| f.(k,v) } }.curry
+      end
+
       def fmap
         ->(f, ms) { ms.flat_map {|k,v| f.(k,v) } }.curry
       end
