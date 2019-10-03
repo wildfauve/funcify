@@ -39,4 +39,12 @@ RSpec.describe Funcify::Fn do
     end
   end
 
+  context '#partition' do
+
+    it 'partitions an enumeration by the function' do
+      expect(Funcify::Fn.partition.(-> x { x == 1 }).([1,1,2,3,4])).to match_array([[1,1],[2,3,4]])
+    end
+
+  end
+
 end

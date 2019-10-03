@@ -75,6 +75,11 @@ module Funcify
         ->(f, enum) { enum.none? { |e| f.(e) } }.curry
       end
 
+      # > partition.(-> x { x == 1 }).([1,1,2,3,4])
+      def partition
+        -> f, enum { enum.partition { |e| f.(e) } }.curry
+      end
+
       def last
         -> xs { xs.last }
       end
