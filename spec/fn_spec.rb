@@ -47,4 +47,13 @@ RSpec.describe Funcify::Fn do
 
   end
 
+  context '#uniq' do
+
+    it 'creates a new collection with only unique values' do
+      expect(Funcify::Fn.uniq.(Funcify::Fn.identity).([1,1,2])).to match_array([1,2])
+    end
+
+  end
+
+
 end
