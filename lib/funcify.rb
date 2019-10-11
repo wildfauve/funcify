@@ -9,4 +9,5 @@ module Funcify
   autoload :Map,    'funcify/map'
   autoload :Record, 'funcify/record'
   autoload :Monad,  'funcify/monad'
+  autoload :Cond,   'funcify/cond'
 end

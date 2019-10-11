@@ -128,11 +128,11 @@ module Funcify
         -> m, obj { obj.send(m) }.curry
       end
 
-      # The little Either Functor
+      # The little Either Cond
       # returns either the result of f_ok || f_fail by applying the value to test t.
-      # either.(maybe_value_ok, identity, maybe_value).(Success(1))  => 1
+      # > either.(maybe_value_ok, identity, maybe_failure).(Success(1))  => Success(1)
       def either
-        ->(t, f_ok, f_fail, value) { t.(value) ? f_ok.(value) : f_fail.(value) }.curry
+        ->(test, f_ok, f_fail, value) { test.(value) ? f_ok.(value) : f_fail.(value) }.curry
       end
 
       # success_fn: a test fn to apply to the enum resulting from applying the tests; e.g. Fn.all? (and) or Fn.any? (or)

@@ -3,6 +3,10 @@ require "funcify"
 require 'pry'
 
 M = Dry::Monads
+Monad = Funcify::Monad
+Cond  = Funcify::Cond
+Fn    = Funcify::Fn
+Map   = Funcify::Map
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
