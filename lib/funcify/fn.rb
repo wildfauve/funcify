@@ -120,6 +120,10 @@ module Funcify
         ->(value_type, f) { Fn.lift.(value_type, f) }.curry
       end
 
+      def lift_monad
+        -> value { maybe_value_ok?.(value) ? maybe_value.(value) : maybe_failure.(value) }
+      end
+
       def identity
         ->(i) { i }
       end
@@ -236,10 +240,6 @@ module Funcify
 
       def max_int
         -> limit, i { i > limit ? limit : i }.curry
-      end
-
-      def lift_monad
-        -> value { maybe_value_ok?.(value) ? maybe_value.(value) : maybe_failure.(value) }
       end
 
       def failure

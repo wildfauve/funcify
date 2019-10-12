@@ -19,6 +19,12 @@ RSpec.describe Monad do
       expect(result).to eq :error
     end
 
+    # it 'lifts a Try failure' do
+    #   include Dry::Monads::Try::Mixin
+    #   result = Monad.lift.(Try { 0/1 } )
+    #   binding.pry
+    # end
+
   end
 
 end

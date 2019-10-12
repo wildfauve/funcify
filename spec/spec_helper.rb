@@ -3,6 +3,7 @@ require "funcify"
 require 'pry'
 
 M = Dry::Monads
+
 Monad = Funcify::Monad
 Cond  = Funcify::Cond
 Fn    = Funcify::Fn

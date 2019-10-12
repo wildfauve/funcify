@@ -6,9 +6,12 @@ module Funcify
 
     class << self
 
+      # operates with a Result and a Try monad
       # > lift.(Success(:ok)) => :ok
       def lift
-        -> value { maybe_value_ok?.(value) ? maybe_value.(value) : maybe_failure.(value) }
+        -> value {
+          maybe_value_ok?.(value) ? maybe_value.(value) : try_maybe_failure.(value)
+        }
       end
 
       # > failure.(:error)  => Failure(:error)
@@ -34,7 +37,13 @@ module Funcify
       end
 
       def maybe_failure
-        ->(v) { v.failure }
+        -> v { v.failure }
+      end
+
+      def try_maybe_failure
+        -> v {
+          v.respond_to?(:failure) ? v.failure : v.exception
+        }
       end
 
     end
