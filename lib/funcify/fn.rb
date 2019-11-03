@@ -309,12 +309,16 @@ module Funcify
         }.curry
       end
 
-      # Provide a delimiter (such as "|")
-      # Returns a curryed fn that takes 2 params:
-      # @param f, a function that extracts a property from a map
+      # Takes a collection and generates a string delimited by the delimiter (such as "|")
+      # Returns a curryed fn (ready for the collection) that takes 2 params:
+      # @param f, a function that extracts the properties from a map; e.g. F.map.(F.identity)
       # @param enum, the map
       def delimiter_tokeniser
         -> delimiter, f, enum { f.(enum).join(delimiter) }.curry
+      end
+
+      def delimiter_detokeniser
+        -> delimiter, f, enum { map.(f, enum).join(delimiter) }.curry
       end
 
       def detokeniser(delimiter)

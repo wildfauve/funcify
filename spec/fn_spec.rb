@@ -55,5 +55,13 @@ RSpec.describe Fn do
 
   end
 
+  context '#delimiter_detokeniser' do
+
+    it 'turns a collection into a delimited string' do
+      expect(Fn.delimiter_detokeniser.(",").(Fn.identity).(["1","2","3"])).to eq("1,2,3")
+    end
+
+  end
+
 
 end
