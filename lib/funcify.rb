@@ -10,4 +10,5 @@ module Funcify
   autoload :Record, 'funcify/record'
   autoload :Monad,  'funcify/monad'
   autoload :Cond,   'funcify/cond'
+  autoload :Str,    'funcify/str'
 end
