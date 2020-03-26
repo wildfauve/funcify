@@ -11,4 +11,5 @@ module Funcify
   autoload :Monad,  'funcify/monad'
   autoload :Cond,   'funcify/cond'
   autoload :Str,    'funcify/str'
+  autoload :FSet,   'funcify/fset'
 end

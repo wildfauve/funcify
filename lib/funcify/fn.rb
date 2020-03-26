@@ -140,8 +140,9 @@ module Funcify
       end
 
       # success_fn: a test fn to apply to the enum resulting from applying the tests; e.g. Fn.all? (and) or Fn.any? (or)
-      # test_fns  : [test_fn]; each test is called with (v)
-      # value_or  :  the test context (can be anything understood by the tests)
+      # test_fns  : [test_fn]; each test is called with (value)
+      # value     :  the test context (can be anything understood by the tests)
+      # > tests.(all?, [-> x { x == 1}]).(1)  => true
       def tests
         -> success_fn, test_fns, value {
           Fn.compose.(

@@ -12,8 +12,7 @@ module Funcify
       #
       # Authorise Fns
       #
-
-      # @param enforcer  A fn that responds to #call performed when the authorisations fail
+      # @param enforcer  A fn that responds to #call and is invoked when the authorisations fail
       # @param policy_predicates  An array of Policy Predicates.  The policy takes optional state and ctx and returns a Maybe. Available checkers are:
       #                  + Afn.activity_policy
       #                  + Afn.privilege_policy
@@ -34,7 +33,7 @@ module Funcify
         }.curry
       end
 
-      # alias of authorise, which works with fmapping; hence all policy checks MUST be Success
+      # alias of #authorise, which works with fmapping; hence all policy checks MUST be Success
       def all_authorisor
         -> enforcer, policies, ctx {
           Fn.compose.(  finally_fn.(enforcer),
@@ -123,7 +122,7 @@ module Funcify
       # + and finally, the significant test, the service/resource/action match an activity
       def activity_policy
         -> activities, filter_fn, ctx {
-          Fn.either.(Fn.tests.(Fn.all?, activity_tests), Fn.success, Fn.failure ).(ctx.merge(activities: filter_fn.(activities)))
+          Fn.either.( Fn.tests.(Fn.all?, activity_tests), Fn.success, Fn.failure ).(ctx.merge(activities: filter_fn.(activities)))
         }.curry
       end
 

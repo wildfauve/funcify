@@ -9,6 +9,7 @@ Cond  = Funcify::Cond
 Fn    = Funcify::Fn
 Map   = Funcify::Map
 Str   = Funcify::Str
+FSet  = Funcify::FSet
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

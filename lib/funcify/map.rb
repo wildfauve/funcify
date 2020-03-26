@@ -28,7 +28,14 @@ module Funcify
       end
 
       def equality
-        ->( field, value, i ) { i[field] == value }.curry
+        -> field, test_value, i {
+          if field.kind_of?(Proc)
+            field.(i) == test_value
+          else
+            i[field] == test_value
+          end
+        }.curry
+
       end
 
     end # class Self
