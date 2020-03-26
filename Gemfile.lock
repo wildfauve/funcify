@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    funcify (0.4.21)
+    funcify (0.4.22)
       dry-monads (~> 1.0)
 
 GEM
@@ -21,7 +21,7 @@ GEM
     pry (0.12.2)
       coderay (~> 1.1.0)
       method_source (~> 0.9.0)
-    rake (10.5.0)
+    rake (13.0.1)
     rspec (3.8.0)
       rspec-core (~> 3.8.0)
       rspec-expectations (~> 3.8.0)
@@ -43,7 +43,7 @@ DEPENDENCIES
   bundler (~> 2.1.4)
   funcify!
   pry
-  rake (~> 10.0)
+  rake (~> 13.0)
   rspec (~> 3.0)
 
 BUNDLED WITH
