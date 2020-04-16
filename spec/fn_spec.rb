@@ -25,6 +25,21 @@ RSpec.describe Fn do
 
   context '#wrapper' do
 
+    it 'returns a callable fn' do
+      caller = -> x,y { x + y }
+      wrapper = Fn.wrapper.(caller.(1,2))
+
+      expect(wrapper.()).to eq 3
+    end
+
+  end
+
+  context '#inject' do
+
+    it 'builds an array' do
+      expect((Fn.inject.([]).(-> acc, h {acc << h[:a]}.curry)).([{a: 1}, {a: 2}])).to match_array([1,2])
+    end
+
   end
 
   context '#equality' do

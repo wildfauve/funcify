@@ -343,6 +343,12 @@ module Funcify
         }
       end
 
+      # takes a function which is ready to be executed and wraps it in a function which will finally invoke it,
+      # by calling with empty arguments
+      def wrapper
+        -> fn { -> { fn } }
+      end
+
 
     end # class Self
 
