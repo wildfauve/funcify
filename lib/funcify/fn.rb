@@ -354,6 +354,14 @@ module Funcify
         -> fn { -> { fn } }
       end
 
+      def all_success?
+        Fn.all?.(Monad.maybe_value_ok?)
+      end
+
+      def hash_to_tokens
+        compose.(join.(","), Map.map.(-> k, v { "#{k}:#{v}"}))
+      end
+
 
     end # class Self
 
