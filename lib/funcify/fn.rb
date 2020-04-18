@@ -38,6 +38,11 @@ module Funcify
         ->(f, enum) { enum.delete_if {|e| f.(e) } }.curry
       end
 
+      # add an element to an array
+      def add
+        -> x, xs { xs << x }.curry
+      end
+
       # finds the first element in a collecton where f.(e) is true
       def find
         ->(f, enum) { enum.find { |e| f.(e) } }.curry
