@@ -27,6 +27,11 @@ module Funcify
         -> f, ms { ms.select {|k,v| f.(k,v) } }.curry
       end
 
+      def find
+        -> f, ms { ms.find {|k,v| f.(k,v) } }.curry
+      end
+
+
       def equality
         -> field, test_value, i {
           if field.kind_of?(Proc)

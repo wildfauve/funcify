@@ -24,6 +24,7 @@ RSpec.describe Map do
     end
   end
 
+
   context '#any?' do
     it 'determines if any value meets the predicate for each k/v' do
       predicate = -> k, v { v == 1 }.curry
