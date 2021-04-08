@@ -24,7 +24,6 @@ RSpec.describe Map do
     end
   end
 
-
   context '#any?' do
     it 'determines if any value meets the predicate for each k/v' do
       predicate = -> k, v { v == 1 }.curry
@@ -32,5 +31,11 @@ RSpec.describe Map do
     end
   end
 
+  context '#keep_if' do
+    it 'keeps value that meets the predicate for each k/v' do
+      predicate = -> k, v { v == 1 }.curry
+      expect(Map.keep_if.(predicate).({a: 1, b: 2})).to eq({a: 1})
+    end
+  end
 
 end

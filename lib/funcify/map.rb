@@ -31,6 +31,9 @@ module Funcify
         -> f, ms { ms.find {|k,v| f.(k,v) } }.curry
       end
 
+      def keep_if
+        -> f, ms { ms.keep_if {|k,v| f.(k,v) } }.curry
+      end
 
       def equality
         -> field, test_value, i {
